@@ -8,7 +8,6 @@ workflows:
     environment:
       groups:
         - android-signing
-      python: 3.11
       java: 17
       android_ndk: 25.2.9519653
 
@@ -20,6 +19,13 @@ workflows:
           include: true
 
     scripts:
+      - name: Установка и активация Python 3.13
+        script: |
+          # Используем предустановленный pyenv на macOS машинах Codemagic
+          pyenv install 3.13.0 --skip-existing
+          pyenv global 3.13.0
+          echo 'export PATH="$HOME/.pyenv/shims:$PATH"' >> $CM_ENV
+          
       - name: Установка зависимостей Python и Flet CLI
         script: |
           python -m pip install --upgrade pip
