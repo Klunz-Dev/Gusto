@@ -11,8 +11,7 @@ workflows:
       vars:
         ANDROID_NDK_VERSION: "25.2.9519653"
       java: 17
-      # Указываем точную версию Flutter, которую запрашивал Flet
-      flutter: 3.44.8 
+      flutter: 3.44.8
 
     triggering:
       events:
@@ -28,7 +27,7 @@ workflows:
           pyenv global 3.13.0
           echo 'export PATH="$HOME/.pyenv/shims:$PATH"' >> $CM_ENV
           
-      - name: Установка зависимостей Python и Flet CLI
+      - name: Install dependencies
         script: |
           python -m pip install --upgrade pip
           pip install setuptools flet requests
@@ -38,17 +37,14 @@ workflows:
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
           echo "ndk.dir=$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION" >> local.properties
 
-      - name: Сборка Android APK (Flet)
+      - name: Build APK
         script: |
-          # Переходим в папку с исходным кодом вашего приложения Gusto
           cd src
-          
-          # Запускаем сборку с флагом --no-interactive на случай дополнительных проверок
-          flet build apk --product "Gusto" --no-interactive
+          # Используем синтаксис как в вашем примере шаблона
+          yes | flet build apk --product "Gusto"
 
     artifacts:
-      - src/build/apk/*.apk
-      - src/build/app/outputs/flutter-apk/*-release.apk
+      - src/build/**/*.apk
 
     publishing:
       email:
