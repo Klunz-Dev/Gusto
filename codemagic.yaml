@@ -11,8 +11,8 @@ workflows:
       vars:
         ANDROID_NDK_VERSION: "25.2.9519653"
       java: 17
-      # Отключаем дефолтный flutter, так как flet сам скачает нужную ему версию 3.44.8
-      flutter: none 
+      # Указываем точную версию Flutter, которую запрашивал Flet
+      flutter: 3.44.8 
 
     triggering:
       events:
@@ -43,7 +43,7 @@ workflows:
           # Переходим в папку с исходным кодом вашего приложения Gusto
           cd src
           
-          # Флаг --no-interactive запрещает интерактивные вопросы и автоматически скачивает Flutter SDK 3.44.8
+          # Запускаем сборку с флагом --no-interactive на случай дополнительных проверок
           flet build apk --product "Gusto" --no-interactive
 
     artifacts:
