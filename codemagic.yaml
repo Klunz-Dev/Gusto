@@ -10,7 +10,6 @@ workflows:
         - android-signing
       vars:
         ANDROID_NDK_VERSION: "25.2.9519653"
-        FLET_VERSION: "0.70.0"  # Фиксируем версию с поддержкой ft.icons.Icons
       java: 17
       flutter: 3.44.8
 
@@ -31,7 +30,7 @@ workflows:
       - name: Install dependencies
         script: |
           python -m pip install --upgrade pip
-          pip install setuptools flet==$FLET_VERSION
+          pip install setuptools flet==0.86.5
 
       - name: Configure app metadata
         script: |
@@ -61,7 +60,6 @@ workflows:
       - name: Build APK
         script: |
           cd src
-          # login_screen.py — точка входа, импорты относительные (from main_screen import ...)
           yes | flet build apk --module-name login_screen
 
     artifacts:
