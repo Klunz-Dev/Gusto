@@ -1,0 +1,50 @@
+# Конфигурация Codemagic CI/CD для приложения Gusto (Flet Android)
+workflows:
+  android-gusto-build:
+    name: Gusto Android Build
+    max_build_duration: 30
+    instance_type: mac_mini_m1
+    
+    environment:
+      groups:
+        - android-signing
+      python: 3.11
+      java: 17
+      android_ndk: 25.2.9519653
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+
+    scripts:
+      - name: Установка зависимостей Python и Flet CLI
+        script: |
+          python -m pip install --upgrade pip
+          pip install flet requests
+          
+      - name: Настройка Android SDK окружения
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
+      - name: Сборка Android APK (Flet)
+        script: |
+          # Переходим в папку с исходным кодом проекта Gusto
+          cd src
+          
+          # Запуск официальной сборки Flet под Android
+          flet build apk --release --name Gusto
+
+    artifacts:
+      - src/build/app/outputs/flutter-apk/*-release.apk
+      - src/build/app/outputs/apk/release/*.apk
+
+    publishing:
+      email:
+        recipients:
+          - profardog@gmail.com
+        notify:
+          success: true
+          failure: true
