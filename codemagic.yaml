@@ -1,0 +1,76 @@
+version: 1.0.0
+workflows:
+  android-gusto-build:
+    name: Gusto Android Build
+    instance_type: mac_mini_m1
+    max_build_duration: 30
+    
+    environment:
+      groups:
+        - android-signing
+      vars:
+        ANDROID_NDK_VERSION: "25.2.9519653"
+        FLET_VERSION: "0.70.0"  # Фиксируем версию с поддержкой ft.icons.Icons
+      java: 17
+      flutter: 3.44.8
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+
+    scripts:
+      - name: Установка Python 3.13
+        script: |
+          pyenv install 3.13.0 --skip-existing
+          pyenv global 3.13.0
+          echo 'export PATH="$HOME/.pyenv/shims:$PATH"' >> $CM_ENV
+          
+      - name: Install dependencies
+        script: |
+          python -m pip install --upgrade pip
+          pip install setuptools flet==$FLET_VERSION
+
+      - name: Configure app metadata
+        script: |
+          cat > src/pyproject.toml << 'EOF'
+          [project]
+          name = "gusto"
+          version = "1.0.0"
+          description = "Gusto. Слова, которые меняют день."
+          
+          [tool.flet]
+          product = "Gusto"
+          org = "dev.klunz"
+          
+          [tool.flet.app]
+          path = "."
+          
+          [tool.flet.splash]
+          color = "#FFFFFF"
+          dark_color = "#FFFFFF"
+          EOF
+
+      - name: Настройка Android SDK
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+          echo "ndk.dir=$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION" >> local.properties
+
+      - name: Build APK
+        script: |
+          cd src
+          # login_screen.py — точка входа, импорты относительные (from main_screen import ...)
+          yes | flet build apk --module-name login_screen
+
+    artifacts:
+      - src/build/**/*.apk
+
+    publishing:
+      email:
+        recipients:
+          - profardog@gmail.com
+        notify:
+          success: true
+          failure: true
