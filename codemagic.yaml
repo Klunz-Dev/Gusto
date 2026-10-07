@@ -40,8 +40,8 @@ workflows:
       - name: Build APK
         script: |
           cd src
-          # Используем синтаксис как в вашем примере шаблона
-          yes | flet build apk --product "Gusto"
+          # Указываем login_screen в качестве точки входа в ваше приложение
+          yes | flet build apk --product "Gusto" --module-name login_screen
 
     artifacts:
       - src/build/**/*.apk
