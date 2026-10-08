@@ -57,6 +57,14 @@ workflows:
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
           echo "ndk.dir=$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION" >> local.properties
 
+      - name: Fix Flutter JNI compatibility
+        script: |
+          cd src
+          # Обновляем зависимости Flutter для совместимости
+          flutter pub upgrade --major-versions jni jni_flutter
+          # Или принудительно используем совместимые версии
+          flutter pub add jni:^1.1.0 jni_flutter:^1.1.0
+
       - name: Build APK
         script: |
           cd src
